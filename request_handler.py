@@ -1,6 +1,8 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from views import get_all_animals, get_single_animal, create_animal, update_animal, get_all_locations
+from views import get_all_animals, get_single_animal, create_animal, update_animal, get_all_locations, get_single_location, get_all_customers, get_single_customer
 import json
+
+from views.employee_requests import get_all_employees, get_single_employee
 
 
 
@@ -79,12 +81,32 @@ class HandleRequests(BaseHTTPRequestHandler):
         
         if resource == "locations":
             if id is not None:
-                response = f"{get_all_locations(id)}"
+                response = f"{get_single_location(id)}"
 
             else:
                 response = f"{get_all_locations()}"
 
         self.wfile.write(response.encode())
+        
+        if resource == "employees":
+            if id is not None:
+                response = f"{get_single_employee(id)}"
+
+            else:
+                response = f"{get_all_employees()}"
+
+        self.wfile.write(response.encode())
+        
+        if resource == "customers":
+            if id is not None:
+                response = f"{get_single_customer(id)}"
+
+            else:
+                response = f"{get_all_customers()}"
+
+        self.wfile.write(response.encode())
+
+
 
     # Here's a method on the class that overrides the parent's method.
     # It handles any POST request.
