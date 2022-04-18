@@ -1,4 +1,4 @@
 from .animal import Animal
-from .customer import customer
-from .employee import employee
-from .location import location
+from .location import Location
+from .customer import Customer
+from .employee import Employee

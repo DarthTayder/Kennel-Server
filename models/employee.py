@@ -1,5 +1,5 @@
-class employee():
+class Employee():
 
     def __init__(self, id, name):
         self.id = id
-        self.address = name
+        self.name = name
