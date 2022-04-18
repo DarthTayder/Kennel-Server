@@ -3,6 +3,7 @@ from views import get_all_animals, get_single_animal, create_animal, update_anim
 import json
 
 from views.employee_requests import get_all_employees, get_single_employee
+from views.customer_requests import get_customers_by_email
 
 
 
@@ -72,47 +73,43 @@ class HandleRequests(BaseHTTPRequestHandler):
     # Here's a method on the class that overrides the parent's method.
     # It handles any GET request.
     def do_GET(self):
-        self._set_headers(200)
-        response = {}  # Default response
+            self._set_headers(200)
 
-        # Parse the URL and capture the tuple that is returned
-        (resource, id) = self.parse_url(self.path)
+            response = {}
 
-        if resource == "animals":
-            if id is not None:
-                response = f"{get_single_animal(id)}"
+        # Parse URL and store entire tuple in a variable
+            parsed = self.parse_url(self.path)
 
-            else:
-                response = f"{get_all_animals()}"
+        # Response from parse_url() is a tuple with 2
+        # items in it, which means the request was for
+        # `/animals` or `/animals/2`
+            if len(parsed) == 2:
+                ( resource, id ) = parsed
 
-        self.wfile.write(response.encode())
-        
-        if resource == "locations":
-            if id is not None:
-                response = f"{get_single_location(id)}"
+            if resource == "animals":
+                if id is not None:
+                    response = f"{get_single_animal(id)}"
+                else:
+                    response = f"{get_all_animals()}"
+            elif resource == "customers":
+                if id is not None:
+                    response = f"{get_single_customer(id)}"
+                else:
+                    response = f"{get_all_customers()}"
 
-            else:
-                response = f"{get_all_locations()}"
+        # Response from parse_url() is a tuple with 3
+        # items in it, which means the request was for
+        # `/resource?parameter=value`
+            elif len(parsed) == 3:
+                ( resource, key, value ) = parsed
 
-        self.wfile.write(response.encode())
-        
-        if resource == "employees":
-            if id is not None:
-                response = f"{get_single_employee(id)}"
+            # Is the resource `customers` and was there a
+            # query parameter that specified the customer
+            # email as a filtering value?
+            if key == "email" and resource == "customers":
+                response = get_customers_by_email(value)
 
-            else:
-                response = f"{get_all_employees()}"
-
-        self.wfile.write(response.encode())
-        
-        if resource == "customers":
-            if id is not None:
-                response = f"{get_single_customer(id)}"
-
-            else:
-                response = f"{get_all_customers()}"
-
-        self.wfile.write(response.encode())
+            self.wfile.write(response.encode())
 
 
 
